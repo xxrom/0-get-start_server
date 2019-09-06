@@ -99,47 +99,17 @@ module.exports =
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apollo-server */ "apollo-server");
 /* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apollo_server__WEBPACK_IMPORTED_MODULE_0__);
- // This is a (sample) collection of books we'll be able to query
-// the GraphQL server for.  A more complete example might fetch
-// from an existing data source like a REST API or database.
+/* harmony import */ var _resolvers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./resolvers */ "./src/resolvers/index.js");
+/* harmony import */ var _schema__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./schema */ "./src/schema.js");
 
-const books = [{
-  title: "Harry Potter and the Chamber of Secrets",
-  author: "J.K. Rowling"
-}, {
-  title: "Jurassic Park",
-  author: "Michael Crichton"
-}]; // Type definitions define the "shape" of your data and specify
-// which ways the data can be fetched from the GraphQL server.
 
-const typeDefs = apollo_server__WEBPACK_IMPORTED_MODULE_0__["gql"]`
-  # Comments in GraphQL are defined with the hash (#) symbol.
-
-  # This "Book" type can be used in other type declarations.
-  type Book {
-    title: String
-    author: String
-  }
-
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
-  type Query {
-    books: [Book]
-  }
-`; // Resolvers define the technique for fetching the types in the
-// schema.  We'll retrieve books from the "books" array above.
-
-const resolvers = {
-  Query: {
-    books: () => books
-  }
-}; // In the most basic sense, the ApolloServer can be started
+ // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
 
 const server = new apollo_server__WEBPACK_IMPORTED_MODULE_0__["ApolloServer"]({
-  typeDefs,
-  resolvers
+  typeDefs: _schema__WEBPACK_IMPORTED_MODULE_2__["typeDefs"],
+  resolvers: _resolvers__WEBPACK_IMPORTED_MODULE_1__["resolvers"]
 }); // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
 
@@ -148,6 +118,121 @@ server.listen().then(({
 }) => {
   console.log(`🚀  Server ready at ${url}`);
 });
+
+/***/ }),
+
+/***/ "./src/resolvers/index.js":
+/*!********************************!*\
+  !*** ./src/resolvers/index.js ***!
+  \********************************/
+/*! exports provided: resolvers */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resolvers", function() { return resolvers; });
+// This is a (sample) collection of books we'll be able to query
+// the GraphQL server for.  A more complete example might fetch
+// from an existing data source like a REST API or database.
+const books = [{
+  title: "Harry Potter and the Chamber of Secrets",
+  author: "J.K. Rowling"
+}, {
+  title: "Jurassic Park",
+  author: "Michael Crichton"
+}]; // Resolvers define the technique for fetching the types in the
+// schema.  We'll retrieve books from the "books" array above.
+
+const resolvers = {
+  Query: {// books: (_, __, { dataSources }) => dataSources.booksAPI.getAllLaunches(),
+    // books: () => books
+  }
+};
+
+
+/***/ }),
+
+/***/ "./src/schema.js":
+/*!***********************!*\
+  !*** ./src/schema.js ***!
+  \***********************/
+/*! exports provided: typeDefs */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "typeDefs", function() { return typeDefs; });
+/* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apollo-server */ "apollo-server");
+/* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apollo_server__WEBPACK_IMPORTED_MODULE_0__);
+ // Type definitions define the "shape" of your data and specify
+// which ways the data can be fetched from the GraphQL server.
+
+const typeDefs = apollo_server__WEBPACK_IMPORTED_MODULE_0__["gql"]`
+  ### Apollo Tutorial (Build a schema)
+  # This "Book" type can be used in other type declarations.
+  type Book {
+    title: String
+    author: String
+  }
+
+  type Rocket {
+    id: ID!
+    name: String
+    type: String
+  }
+
+  type User {
+    id: ID!
+    email: String!
+    trips: [Launch]!
+  }
+
+  type Mission {
+    name: String
+    missionPatch(size: PatchSize): String
+  }
+
+  type TripUpdateResponse {
+    success: Boolean!
+    message: String
+    launches: [Launch]
+  }
+
+  enum PatchSize {
+    SMALL
+    LARGE
+  }
+
+  type Launch {
+    id: ID!
+    site: String
+    mission: Mission
+    rocket: Rocket
+    isBooked: Boolean!
+  }
+
+  ### QUERY
+  type Query {
+    books: [Book]
+    ### ---
+    launches: [Launch]!
+    launch(id: ID!): Launch
+    # Queries for the current user
+    me: User
+  }
+
+  ### MUTATION
+  type Mutation {
+    # if false, booking trips failed -- check errors
+    bookTrips(launchIds: [ID]!): TripUpdateResponse!
+
+    # if false, cancellation failed -- check errors
+    cancelTrip(launchId: ID!): TripUpdateResponse!
+
+    login(email: String): String # login token
+  }
+`;
+
 
 /***/ }),
 
