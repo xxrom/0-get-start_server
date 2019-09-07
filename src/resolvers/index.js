@@ -18,6 +18,11 @@ const resolvers = {
   Query: {
     // books: (_, __, { dataSources }) => dataSources.booksAPI.getAllLaunches(),
     // books: () => books
+    launches: (_, __, { dataSources }) =>
+      dataSources.launchAPI.getAllLaunches(),
+    launch: (_, { id }, { dataSources }) =>
+      dataSources.launchAPI.getLaunchById({ launchId: id }),
+    me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()
   }
 };
 
