@@ -22,6 +22,8 @@ const resolvers = {
       dataSources.launchAPI.getAllLaunches(),
     launch: (_, { id }, { dataSources }) =>
       dataSources.launchAPI.getLaunchById({ launchId: id }),
+    launchesById: (_, { launchIds }, { dataSources }) =>
+      dataSources.launchAPI.getLaunchesByIds({ launchIds }),
     me: (_, __, { dataSources }) => dataSources.userAPI.findOrCreateUser()
   }
 };

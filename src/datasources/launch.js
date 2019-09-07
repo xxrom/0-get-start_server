@@ -6,6 +6,20 @@ class LaunchAPI extends RESTDataSource {
     this.baseURL = "https://api.spacexdata.com/v2/";
   }
 
+  /*
+query GetLaunchByIds {
+  launches {
+    id
+    site
+    mission {
+      name
+    }
+    rocket {
+      name
+    }
+  }
+}
+  */
   async getAllLaunches() {
     // Get from 'this.baseURL' + 'launches'
     const response = await this.get("launches");
@@ -33,6 +47,21 @@ class LaunchAPI extends RESTDataSource {
     };
   }
 
+  /*
+  query GetLaunchById {
+    launch(id: 60) {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        id
+        type
+      }
+    }
+  }
+  */
   async getLaunchById({ launchId }) {
     const response = await this.get("launches", { flight_number: launchId });
     return this.launchReducer(response[0]);

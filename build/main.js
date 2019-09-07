@@ -107,6 +107,21 @@ class LaunchAPI extends apollo_datasource_rest__WEBPACK_IMPORTED_MODULE_0__["RES
     super();
     this.baseURL = "https://api.spacexdata.com/v2/";
   }
+  /*
+  query GetLaunchByIds {
+  launches {
+    id
+    site
+    mission {
+      name
+    }
+    rocket {
+      name
+    }
+  }
+  }
+  */
+
 
   async getAllLaunches() {
     // Get from 'this.baseURL' + 'launches'
@@ -132,6 +147,22 @@ class LaunchAPI extends apollo_datasource_rest__WEBPACK_IMPORTED_MODULE_0__["RES
       }
     };
   }
+  /*
+  query GetLaunchById {
+    launch(id: 60) {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        id
+        type
+      }
+    }
+  }
+  */
+
 
   async getLaunchById({
     launchId
@@ -366,6 +397,13 @@ const resolvers = {
     }) => dataSources.launchAPI.getLaunchById({
       launchId: id
     }),
+    launchesById: (_, {
+      launchIds
+    }, {
+      dataSources
+    }) => dataSources.launchAPI.getLaunchesByIds({
+      launchIds
+    }),
     me: (_, __, {
       dataSources
     }) => dataSources.userAPI.findOrCreateUser()
@@ -440,6 +478,7 @@ const typeDefs = apollo_server__WEBPACK_IMPORTED_MODULE_0__["gql"]`
     ### ---
     launches: [Launch]!
     launch(id: ID!): Launch
+    launchesById(launchIds: [ID!]): [Launch]
     # Queries for the current user
     me: User
   }

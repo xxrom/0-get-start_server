@@ -52,6 +52,7 @@ const typeDefs = gql`
     ### ---
     launches: [Launch]!
     launch(id: ID!): Launch
+    launchesById(launchIds: [ID!]): [Launch]
     # Queries for the current user
     me: User
   }
