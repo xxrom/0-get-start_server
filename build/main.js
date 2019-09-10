@@ -107,19 +107,36 @@ class LaunchAPI extends apollo_datasource_rest__WEBPACK_IMPORTED_MODULE_0__["RES
     super();
     this.baseURL = "https://api.spacexdata.com/v2/";
   }
-  /*
+  /* // without pagination
   query GetLaunchByIds {
-  launches {
-    id
-    site
-    mission {
-      name
-    }
-    rocket {
-      name
+    launches {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        name
+      }
     }
   }
-  }
+  */
+
+  /* // with pagination
+    query GetLaunchesPagination {
+      launches (pageSize: 3
+        //, after: "1561433400" // optional parameter
+        ) {
+        cursor
+        hasMore
+        launches {
+          id
+          mission{
+            name
+          }
+        }
+      }
+    }
   */
 
 
@@ -172,6 +189,21 @@ class LaunchAPI extends apollo_datasource_rest__WEBPACK_IMPORTED_MODULE_0__["RES
     });
     return this.launchReducer(response[0]);
   }
+  /*
+  query GetLaunchByIds {
+    launchesById(launchIds: [1,2,60]) {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        name
+      }
+    }
+  }
+  */
+
 
   getLaunchesByIds({
     launchIds
@@ -210,6 +242,7 @@ class UserAPI extends apollo_datasource__WEBPACK_IMPORTED_MODULE_0__["DataSource
   }) {
     super();
     this.store = store;
+    console.log("this.store", this.store);
   }
   /**
    * This is a function that gets called by ApolloServer when being setup.
@@ -232,13 +265,17 @@ class UserAPI extends apollo_datasource__WEBPACK_IMPORTED_MODULE_0__["DataSource
   async findOrCreateUser({
     email: emailArg
   } = {}) {
+    console.log("findOrCreateUser");
     const email = this.context && this.context.user ? this.context.user.email : emailArg;
+    console.log("findOrCreateUser", email);
     if (!email || !isemail__WEBPACK_IMPORTED_MODULE_1___default.a.validate(email)) return null;
+    console.log("findOrCreateUser 2");
     const users = await this.store.users.findOrCreate({
       where: {
         email
       }
     });
+    console.log("findOrCreateUser", users);
     return users && users[0] ? users[0] : null;
   }
 
@@ -326,30 +363,60 @@ class UserAPI extends apollo_datasource__WEBPACK_IMPORTED_MODULE_0__["DataSource
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! apollo-server */ "apollo-server");
 /* harmony import */ var apollo_server__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(apollo_server__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils */ "./src/utils.js");
-/* harmony import */ var _schema__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./schema */ "./src/schema.js");
-/* harmony import */ var _resolvers__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./resolvers */ "./src/resolvers/index.js");
-/* harmony import */ var _datasources_launch__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./datasources/launch */ "./src/datasources/launch.js");
-/* harmony import */ var _datasources_user__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./datasources/user */ "./src/datasources/user.js");
+/* harmony import */ var isemail__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! isemail */ "isemail");
+/* harmony import */ var isemail__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(isemail__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils */ "./src/utils.js");
+/* harmony import */ var _schema__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./schema */ "./src/schema.js");
+/* harmony import */ var _resolvers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./resolvers */ "./src/resolvers/index.js");
+/* harmony import */ var _datasources_launch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./datasources/launch */ "./src/datasources/launch.js");
+/* harmony import */ var _datasources_user__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./datasources/user */ "./src/datasources/user.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
 
 
 
-const store = Object(_utils__WEBPACK_IMPORTED_MODULE_1__["createStore"])(); // In the most basic sense, the ApolloServer can be started
+
+
+const store = Object(_utils__WEBPACK_IMPORTED_MODULE_2__["createStore"])(); // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers
 // responsible for fetching the data for those types.
 
 const server = new apollo_server__WEBPACK_IMPORTED_MODULE_0__["ApolloServer"]({
-  typeDefs: _schema__WEBPACK_IMPORTED_MODULE_2__["typeDefs"],
-  resolvers: _resolvers__WEBPACK_IMPORTED_MODULE_3__["resolvers"],
+  typeDefs: _schema__WEBPACK_IMPORTED_MODULE_3__["typeDefs"],
+  resolvers: _resolvers__WEBPACK_IMPORTED_MODULE_4__["resolvers"],
   dataSources: () => ({
-    launchAPI: new _datasources_launch__WEBPACK_IMPORTED_MODULE_4__["LaunchAPI"](),
-    userAPI: new _datasources_user__WEBPACK_IMPORTED_MODULE_5__["UserAPI"]({
+    launchAPI: new _datasources_launch__WEBPACK_IMPORTED_MODULE_5__["LaunchAPI"](),
+    userAPI: new _datasources_user__WEBPACK_IMPORTED_MODULE_6__["UserAPI"]({
       store
     })
-  })
+  }),
+  context: async ({
+    req
+  }) => {
+    // simple auth check on every request
+    const auth = req.headers && req.headers.authorization || "";
+    const email = Buffer.from(auth, "base64").toString("ascii"); // if the email isn't formatted validly, return null for user
+
+    if (!isemail__WEBPACK_IMPORTED_MODULE_1___default.a.validate(email)) return {
+      user: null
+    }; // find a user by their email
+
+    const users = await store.users.findOrCreate({
+      where: {
+        email
+      }
+    });
+    const user = users && users[0] ? users[0] : null;
+    return {
+      user: _objectSpread({}, user.dataValues)
+    };
+  }
 }); // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
 
@@ -371,9 +438,11 @@ server.listen().then(({
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "resolvers", function() { return resolvers; });
-// This is a (sample) collection of books we'll be able to query
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils */ "./src/utils.js");
+ // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
 // from an existing data source like a REST API or database.
+
 const books = [{
   title: "Harry Potter and the Chamber of Secrets",
   author: "J.K. Rowling"
@@ -387,9 +456,44 @@ const resolvers = {
   Query: {
     // books: (_, __, { dataSources }) => dataSources.booksAPI.getAllLaunches(),
     // books: () => books
-    launches: (_, __, {
+    // launches: (_, __, { dataSources }) =>  // Old one without pagination (which could be done)
+    //   dataSources.launchAPI.getAllLaunches(),
+
+    /**
+     * pageSize - размер блока с данными, after - начало отсчета?
+     * query GetLaunches {
+     * launches(pageSize: 3) {
+     *   launches {
+     *       id
+     *       mission {
+     *         name
+     *       }
+     *     }
+     *   }
+     * }
+     */
+    launches: async (_, {
+      pageSize = 20,
+      after
+    }, {
       dataSources
-    }) => dataSources.launchAPI.getAllLaunches(),
+    }) => {
+      const allLaunches = await dataSources.launchAPI.getAllLaunches(); // we want these in reverse chronological order
+
+      allLaunches.reverse();
+      const launches = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["paginateResults"])({
+        after,
+        pageSize,
+        results: allLaunches
+      });
+      return {
+        launches,
+        cursor: launches.length ? launches[launches.length - 1].cursor : null,
+        // if the cursor of the end of the paginated results is the same as the
+        // last item in _all_ results, then there are no more results after this
+        hasMore: launches.length ? launches[launches.length - 1].cursor !== allLaunches[allLaunches.length - 1].cursor : false
+      };
+    },
     launch: (_, {
       id
     }, {
@@ -407,6 +511,88 @@ const resolvers = {
     me: (_, __, {
       dataSources
     }) => dataSources.userAPI.findOrCreateUser()
+  },
+  Mutation: {
+    login: async (_, {
+      email
+    }, {
+      dataSources
+    }) => {
+      const user = await dataSources.userAPI.findOrCreateUser({
+        email
+      });
+      if (user) return Buffer.from(email).toString("base64");
+    },
+    bookTrips: async (_, {
+      launchIds
+    }, {
+      dataSources
+    }) => {
+      const results = await dataSources.userAPI.bookTrips({
+        launchIds
+      });
+      const launches = await dataSources.launchAPI.getLaunchesByIds({
+        launchIds
+      });
+      return {
+        success: results && results.length === launchIds.length,
+        message: results.length === launchIds.length ? "trips booked successfully" : `the following launches couldn't be booked: ${launchIds.filter(id => !results.includes(id))}`,
+        launches
+      };
+    },
+    cancelTrip: async (_, {
+      launchId
+    }, {
+      dataSources
+    }) => {
+      const result = await dataSources.userAPI.cancelTrip({
+        launchId
+      });
+      if (!result) return {
+        success: false,
+        message: "failed to cancel trip"
+      };
+      const launch = await dataSources.launchAPI.getLaunchById({
+        launchId
+      });
+      return {
+        success: true,
+        message: "trip cancelled",
+        launches: [launch]
+      };
+    }
+  },
+  Mission: {
+    // make sure the default size is 'large' in case user doesn't specify
+    missionPatch: (mission, {
+      size
+    } = {
+      size: "LARGE"
+    }) => {
+      return size === "SMALL" ? mission.missionPatchSmall : mission.missionPatchLarge;
+    }
+  },
+  // Нахрена нам нужно это ??? зачем  отдельный блок
+  Launch: {
+    isBooked: async (launch, _, {
+      dataSources
+    }) => dataSources.userAPI.isBookedOnLaunch({
+      launchId: launch.id
+    })
+  },
+  // Нахрена нам нужно это ??? зачем  отдельный блок
+  User: {
+    trips: async (_, __, {
+      dataSources
+    }) => {
+      // get ids of launches by user
+      const launchIds = await dataSources.userAPI.getLaunchIdsByUser();
+      if (!launchIds.length) return []; // look up those launches by their ids
+
+      return dataSources.launchAPI.getLaunchesByIds({
+        launchIds
+      }) || [];
+    }
   }
 };
 
@@ -450,7 +636,8 @@ const typeDefs = apollo_server__WEBPACK_IMPORTED_MODULE_0__["gql"]`
 
   type Mission {
     name: String
-    missionPatch(size: PatchSize): String
+    # missionPatch(size: PatchSize): String
+    missionPatch(mission: String, size: PatchSize): String
   }
 
   type TripUpdateResponse {
@@ -472,11 +659,32 @@ const typeDefs = apollo_server__WEBPACK_IMPORTED_MODULE_0__["gql"]`
     isBooked: Boolean!
   }
 
+  """
+  Simple wrapper around our list of launches that contains a cursor to the
+  last item in the list. Pass this cursor to the launches query to fetch results
+  after these.
+  """
+  type LaunchConnection { # add this below the Query type as an additional type.
+    cursor: String!
+    hasMore: Boolean!
+    launches: [Launch]!
+  }
+
   ### QUERY
   type Query {
     books: [Book]
     ### ---
-    launches: [Launch]!
+    launches( # replace the current launches query with this one.
+      """
+      The number of results to show. Must be >= 1. Default = 20
+      """
+      pageSize: Int
+      """
+      If you add a cursor here, it will only return results _after_ this cursor
+      Optional, get from answer in cursor string data (in launches query)
+      """
+      after: String
+    ): LaunchConnection!
     launch(id: ID!): Launch
     launchesById(launchIds: [ID!]): [Launch]
     # Queries for the current user

@@ -5,6 +5,7 @@ class UserAPI extends DataSource {
   constructor({ store }) {
     super();
     this.store = store;
+    console.log("this.store", this.store);
   }
 
   /**
@@ -23,11 +24,15 @@ class UserAPI extends DataSource {
    * instead
    */
   async findOrCreateUser({ email: emailArg } = {}) {
+    console.log("findOrCreateUser");
     const email =
       this.context && this.context.user ? this.context.user.email : emailArg;
+    console.log("findOrCreateUser", email);
     if (!email || !isEmail.validate(email)) return null;
 
+    console.log("findOrCreateUser 2");
     const users = await this.store.users.findOrCreate({ where: { email } });
+    console.log("findOrCreateUser", users);
     return users && users[0] ? users[0] : null;
   }
 

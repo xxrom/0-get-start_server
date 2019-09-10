@@ -6,19 +6,35 @@ class LaunchAPI extends RESTDataSource {
     this.baseURL = "https://api.spacexdata.com/v2/";
   }
 
-  /*
-query GetLaunchByIds {
-  launches {
-    id
-    site
-    mission {
-      name
-    }
-    rocket {
-      name
+  /* // without pagination
+  query GetLaunchByIds {
+    launches {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        name
+      }
     }
   }
-}
+  */
+  /* // with pagination
+    query GetLaunchesPagination {
+      launches (pageSize: 3
+        //, after: "1561433400" // optional parameter
+        ) {
+        cursor
+        hasMore
+        launches {
+          id
+          mission{
+            name
+          }
+        }
+      }
+    }
   */
   async getAllLaunches() {
     // Get from 'this.baseURL' + 'launches'
@@ -67,6 +83,20 @@ query GetLaunchByIds {
     return this.launchReducer(response[0]);
   }
 
+  /*
+  query GetLaunchByIds {
+    launchesById(launchIds: [1,2,60]) {
+      id
+      site
+      mission {
+        name
+      }
+      rocket {
+        name
+      }
+    }
+  }
+  */
   getLaunchesByIds({ launchIds }) {
     return Promise.all(
       launchIds.map(launchId => this.getLaunchById({ launchId }))
